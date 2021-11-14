@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from quizsystem import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +32,5 @@ urlpatterns = [
     path('login/', views.login, name="login"),
     path('student/', views.student, name="student"),
     path('lecturer/', views.lecturer, name="lecturer"),
-    path('logout/',views.logout_view ,name="logout")
-]
+    path('logout/', views.logout_view, name="logout")
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

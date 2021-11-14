@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth, Group
 from django.contrib import messages
 from django.http import JsonResponse
+from .models import Profile
 # Create your views here.
 
 
@@ -62,8 +63,11 @@ def registerlecturer(request):
         else:
             user = User.objects.create_user(
                 username=username, password=password, email=email)
+
             user_group = Group.objects.get(name='lecturer')
             user.groups.add(user_group)
+            profile = Profile(user=user)
+            profile.save()
             return JsonResponse({"success": "success"}, status=200)
 
 
@@ -71,7 +75,7 @@ def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        if  User.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             username = User.objects.get(email=email)
             print(username)
             user = auth.authenticate(username=username, password=password)
@@ -86,7 +90,7 @@ def login(request):
                     return JsonResponse({"groups": "lecturer"}, status=200)
             else:
                 return JsonResponse({"errors": "รหัสผ่านผิดพลาด"}, status=403)
-        else :
+        else:
             return JsonResponse({"errors": "ไม่มีอีเมลล์ นี้ในระบบ"}, status=403)
 
 
@@ -96,7 +100,6 @@ def student(request):
         return redirect('/loginForm')
     else:
         return HttpResponse("นักเรียน <a href='/logout'>Logout</a>")
-
 
 def lecturer(request):
     if not request.user.is_authenticated:
